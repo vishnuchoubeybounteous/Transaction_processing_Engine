@@ -4,6 +4,7 @@ public class TradeProcessor implements Runnable {
 
     private final BlockingQueue<Trade> queue;
     private final Portfolio portfolio;
+    private final TradeDAO tradeDAO = new TradeDAO();
 
     public TradeProcessor(BlockingQueue<Trade> queue, Portfolio portfolio) {
         this.queue = queue;
@@ -14,13 +15,14 @@ public class TradeProcessor implements Runnable {
     public void run() {
         try {
             while (true) {
-                Trade trade = queue.take(); // waits if empty
-                boolean success = portfolio.applyTrade(trade);
+                Trade trade = queue.take();
 
+                boolean success = portfolio.applyTrade(trade);
                 if (success) {
-                    persist(trade);
+                    tradeDAO.saveTrade(trade);
+                    System.out.println("✅ Trade saved: " + trade.tradeId);
                 } else {
-                    System.out.println("❌ Rejected trade " + trade.tradeId);
+                    System.out.println("❌ Rejected trade: " + trade.tradeId);
                 }
             }
         } catch (InterruptedException e) {
@@ -29,7 +31,6 @@ public class TradeProcessor implements Runnable {
     }
 
     private void persist(Trade trade) {
-        // simulate DB insert
         System.out.println("✅ Persisted trade " + trade.tradeId);
     }
 }

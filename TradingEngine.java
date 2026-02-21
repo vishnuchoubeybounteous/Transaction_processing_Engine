@@ -9,13 +9,9 @@ public class TradingEngine {
         Portfolio portfolio = new Portfolio();
 
         ExecutorService workers = Executors.newFixedThreadPool(3);
-
-        // start worker threads
         for (int i = 0; i < 3; i++) {
             workers.submit(new TradeProcessor(queue, portfolio));
         }
-
-        // load CSV (producer)
         TradeLoader.load(Path.of("trades.csv"), queue);
 
         Thread.sleep(2000); // allow processing
