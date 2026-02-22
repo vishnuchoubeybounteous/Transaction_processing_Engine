@@ -30,13 +30,11 @@ public class Portfolio {
     }
 
     public void printSummary() {
-        System.out.println("\n📊 PORTFOLIO SUMMARY");
-        data.forEach((account, positions) ->
-                positions.forEach((symbol, qty) ->
-                        System.out.println("Account " + account +
-                                " | " + symbol +
-                                " | Qty = " + qty.get())
-                )
-        );
+            System.out.println("\n📊 PORTFOLIO SUMMARY");
+            data.entrySet().stream()
+                    .flatMap(entry -> entry.getValue().entrySet().stream()
+                            .map(pos -> "Account %d | %s | Qty = %d".formatted(entry.getKey(), pos.getKey(), pos.getValue().get())))
+                    .forEach(System.out::println);
+        }
+
     }
-}
